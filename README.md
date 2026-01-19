@@ -28,42 +28,11 @@ By completing this project, you will learn how to:
 * **Database Tool:** DBeaver (for manual inspection)
 * **Version Control:** Git (optional but recommended)
 
-### Optional (Phase 2): API Layer + API Testing
-
-* **API Framework:** FastAPI (Python)
-* **API Testing:** pytest + `requests`
-
 ---
 
 ## Project Structure
 
 ```
-banking-data-testing-project/
-│
-├── README.md              # Project overview and instructions
-├── SPEC.md                # Project specifications and rules
-│
-├── schema/                # SQL schema definitions
-│   └── banking_schema.sql
-│
-├── tests/                 # Automated tests
-│   ├── db/                # Database-level tests (constraints, business rules)
-│   │   ├── test_customers.py
-│   │   ├── test_accounts.py
-│   │   └── test_transactions.py
-│   └── api/               # API tests (Phase 2)
-│       ├── test_customers_api.py
-│       └── test_transactions_api.py
-│
-├── api/                   # Minimal API service (Phase 2)
-│   └── app.py
-│
-├── data/                  # Sample or test data (optional)
-│   └── sample_data.sql
-│
-└── requirements.txt       # Python dependencies
-```
-
 banking-data-testing-project/
 │
 ├── README.md              # Project overview and instructions
@@ -81,33 +50,25 @@ banking-data-testing-project/
 │   └── sample_data.sql
 │
 └── requirements.txt       # Python dependencies
-
 ```
 
 ---
 
 ## Scope of Testing
 
-### Phase 1: Data Testing (Primary Focus)
+The project focuses on **data testing**, not UI or API testing.
 
 We will test:
 
-- **Schema correctness** (data types, nullability)
-- **Constraints** (PRIMARY KEY, FOREIGN KEY, UNIQUE, CHECK)
-- **Default values** (e.g. CURRENT_TIMESTAMP)
-- **Indexes and performance-related design choices**
-- **Business rules**, such as:
-  - Account balance cannot be negative
-  - Transactions must reference valid accounts
-  - Email addresses must be unique
+* **Schema correctness** (data types, nullability)
+* **Constraints** (PRIMARY KEY, FOREIGN KEY, UNIQUE, CHECK)
+* **Default values** (e.g. CURRENT_TIMESTAMP)
+* **Indexes and performance-related design choices**
+* **Business rules**, such as:
 
-### Phase 2 (Optional): API Testing
-
-Once the database rules are stable, we add a minimal API layer and test:
-
-- **HTTP contract** (status codes, schemas, validation)
-- **Positive and negative cases** (invalid payloads, missing fields)
-- **Data consistency** (API results match the database state)
+  * Account balance cannot be negative
+  * Transactions must reference valid accounts
+  * Email addresses must be unique
 
 ---
 
@@ -115,12 +76,12 @@ Once the database rules are stable, we add a minimal API layer and test:
 
 This project applies the following ISTQB concepts:
 
-- Test basis (SPEC.md)
-- Test conditions derived from requirements
-- Positive and negative testing
-- Boundary value analysis (e.g. balances = 0)
-- Test levels: component-level (table-level) testing
-- Defect prevention through constraints
+* Test basis (SPEC.md)
+* Test conditions derived from requirements
+* Positive and negative testing
+* Boundary value analysis (e.g. balances = 0)
+* Test levels: component-level (table-level) testing
+* Defect prevention through constraints
 
 ---
 
@@ -138,18 +99,18 @@ This project applies the following ISTQB concepts:
 
 This project is designed for:
 
-- Beginners in SQL and testing
-- Junior test engineers
-- Manual testers transitioning to automation
-- Anyone learning data testing fundamentals
+* Beginners in SQL and testing
+* Junior test engineers
+* Manual testers transitioning to automation
+* Anyone learning data testing fundamentals
 
 ---
 
 ## Important Notes
 
-- The project is intentionally incremental
-- Each concept is introduced only when needed
-- Explanations prioritize **why**, not just **how**
+* The project is intentionally incremental
+* Each concept is introduced only when needed
+* Explanations prioritize **why**, not just **how**
 
 This is a **learning project**, not a production system.
 
@@ -162,5 +123,3 @@ The next step in this project is:
 ➡️ **Designing and documenting the SQL schema**, starting with the `Customer` table.
 
 We will proceed step by step.
-
-```
