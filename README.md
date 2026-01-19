@@ -60,7 +60,3 @@ After the database is stable, the project may be extended with:
 - HTTP-based testing
 
 ---
-
-## Next Step
-➡️ Finalize the project structure.  
-After that, start designing the SQL schema (Customer table first).
