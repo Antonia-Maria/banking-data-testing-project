@@ -80,3 +80,18 @@ VALUES (
     250.00
 );
 
+INSERT INTO bank_transaction (
+    account_id,
+    amount,
+    currency,
+    direction,
+    description
+)
+VALUES (
+    (SELECT account_id FROM account LIMIT 1),
+    25.00,
+    'EUR',
+    'IN',
+    'Valid transaction test'
+);
+

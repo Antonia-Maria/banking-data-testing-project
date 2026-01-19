@@ -1,5 +1,6 @@
 DROP TABLE IF EXISTS account;
 DROP TABLE IF EXISTS customer;
+DROP TABLE IF EXISTS bank_transaction;
 
 
 -- CUSTOMER master data (one row per customer)
@@ -60,3 +61,31 @@ CREATE TABLE account (
 );
 
 CREATE INDEX idx_account_customer_id ON account (customer_id);
+
+
+
+-- TRANSACTION ledger (one row per money movement)
+CREATE TABLE bank_transaction (
+    transaction_id   BIGINT AUTO_INCREMENT PRIMARY KEY,
+    account_id       BIGINT NOT NULL,
+
+    amount           DECIMAL(15,2) NOT NULL,
+    currency         CHAR(3) NOT NULL DEFAULT 'EUR',
+
+    direction        VARCHAR(10) NOT NULL,  -- 'IN' or 'OUT'
+    description      VARCHAR(255),
+
+    booked_at        DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+
+    CONSTRAINT fk_tx_account
+        FOREIGN KEY (account_id) REFERENCES account(account_id),
+
+    CONSTRAINT chk_tx_direction
+        CHECK (direction IN ('IN', 'OUT')),
+
+    CONSTRAINT chk_tx_amount
+        CHECK (amount > 0)
+);
+
+CREATE INDEX idx_tx_account_id ON bank_transaction (account_id);
+CREATE INDEX idx_tx_booked_at ON bank_transaction (booked_at);
