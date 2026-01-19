@@ -42,3 +42,41 @@
 
 -- Negative amount / invalid business rule (should fail either by CHECK or by test)
 -- INSERT INTO transaction (...) VALUES (...);
+
+USE banking_testing;
+
+-- Clean existing test data (allows re-running this script)
+DELETE FROM account;
+DELETE FROM customer;
+
+-- Insert a valid customer (generic English name, NL phone number)
+INSERT INTO customer (
+    first_name,
+    last_name,
+    date_of_birth,
+    email,
+    phone_e164
+)
+VALUES (
+    'John',
+    'Smith',
+    '1988-06-15',
+    'john.smith@example.com',
+    '+31612345678'
+);
+
+-- Insert a valid account linked to the existing customer
+-- Using a subquery avoids hardcoding customer_id values
+INSERT INTO account (
+    customer_id,
+    iban,
+    account_type,
+    balance
+)
+VALUES (
+    (SELECT customer_id FROM customer WHERE email = 'john.smith@example.com'),
+    'NL91ABNA0417164300',
+    'CURRENT',
+    250.00
+);
+

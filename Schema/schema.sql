@@ -1,6 +1,6 @@
-USE banking_testing;
-
+DROP TABLE IF EXISTS account;
 DROP TABLE IF EXISTS customer;
+
 
 -- CUSTOMER master data (one row per customer)
 CREATE TABLE customer (
@@ -29,3 +29,34 @@ CREATE TABLE customer (
 );
 
 CREATE INDEX idx_customer_last_name ON customer (last_name);
+
+
+-- ACCOUNT master data (one row per account)
+
+CREATE TABLE account (
+    account_id   BIGINT AUTO_INCREMENT PRIMARY KEY,
+    customer_id  BIGINT NOT NULL,
+
+    iban         VARCHAR(34) NOT NULL,
+    account_type VARCHAR(20) NOT NULL,
+
+    balance      DECIMAL(15,2) NOT NULL DEFAULT 0.00,
+    currency     CHAR(3) NOT NULL DEFAULT 'EUR',
+
+    status       VARCHAR(20) NOT NULL DEFAULT 'ACTIVE',
+    created_at   DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    updated_at   DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+
+    CONSTRAINT fk_account_customer
+        FOREIGN KEY (customer_id) REFERENCES customer(customer_id),
+
+    CONSTRAINT uq_account_iban UNIQUE (iban),
+
+    CONSTRAINT chk_account_status
+        CHECK (status IN ('ACTIVE', 'FROZEN', 'CLOSED')),
+
+    CONSTRAINT chk_account_balance
+        CHECK (balance >= 0)
+);
+
+CREATE INDEX idx_account_customer_id ON account (customer_id);
