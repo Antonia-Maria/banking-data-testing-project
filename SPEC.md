@@ -36,7 +36,7 @@ Testing will focus primarily on **data testing**, using:
 
 * Data structure validation
 * Business rule validation
-* Financial transaction testing
+* Financial transaction data integrity testing
 * Data integrity testing
 * Positive and negative test cases
 
@@ -48,78 +48,165 @@ Testing will focus primarily on **data testing**, using:
 
 ---
 
-## 4. Core Entities (Data Model)
+## 4. Data Model – In Scope (Implemented)
+
+This section describes the relational data model that is currently implemented in the database schema.  
+All attributes, constraints, and rules listed below are enforced at the database level and are considered **in scope for testing**.
+
+---
 
 ### 4.1 Customer
 
-A customer represents an individual who owns one or more bank accounts.
+The `customer` table represents a banking customer.  
+Each row corresponds to exactly one customer.
 
-Fields:
+#### Attributes
+- **customer_id**  
+  BIGINT, primary key, auto-generated.  
+  Uniquely identifies a customer.
 
-* customer_id (unique identifier)
-* first_name
-* last_name
-* national_id (unique, mandatory)
-* date_of_birth
-* created_at
+- **first_name**  
+  VARCHAR(100), mandatory.  
+  Customer first name.
 
-Business Rules:
+- **last_name**  
+  VARCHAR(100), mandatory.  
+  Customer last name.
 
-* A customer must have a unique national_id
-* A customer must be at least 18 years old
-* first_name and last_name cannot be null
+- **date_of_birth**  
+  DATE, mandatory.  
+  Customer date of birth.
+
+- **email**  
+  VARCHAR(254), optional.  
+  Must be unique when provided.
+
+- **phone_e164**  
+  VARCHAR(20), optional.  
+  Must be unique when provided and follow E.164 format.
+
+- **status**  
+  VARCHAR(20), mandatory, default value = `ACTIVE`.  
+  Represents the current lifecycle status of the customer.
+
+- **created_at**  
+  DATETIME, mandatory.  
+  Defaults to the timestamp when the record is created.
+
+- **updated_at**  
+  DATETIME, mandatory.  
+  Automatically updated whenever the record is modified.
+
+#### Constraints and Rules
+- Primary key on `customer_id`
+- Unique constraint on `email`
+- Unique constraint on `phone_e164`
+- Allowed values for `status`: `ACTIVE`, `SUSPENDED`, `CLOSED`
+- `phone_e164` must be either NULL or match the E.164 format
+- Index exists on `last_name` to support search and lookup use cases
 
 ---
 
 ### 4.2 Account
 
-A bank account belongs to exactly one customer.
+The `account` table represents a bank account owned by a customer.  
+Each account belongs to exactly one customer.
 
-Fields:
+#### Attributes
+- **account_id**  
+  BIGINT, primary key, auto-generated.  
+  Uniquely identifies an account.
 
-* account_id (unique identifier)
-* customer_id (foreign key → Customer)
-* account_number (unique)
-* account_type (CHECKING | SAVINGS)
-* balance
-* currency (e.g. EUR, USD)
-* status (ACTIVE | BLOCKED | CLOSED)
-* created_at
+- **customer_id**  
+  BIGINT, mandatory.  
+  References the owning customer.
 
-Business Rules:
+- **iban**  
+  VARCHAR(34), mandatory.  
+  International Bank Account Number.
 
-* An account must belong to one customer
-* Account balance cannot be negative
-* Only ACTIVE accounts can process transactions
+- **account_type**  
+  VARCHAR(20), mandatory.  
+  Describes the type of account (e.g. current, savings).
+
+- **balance**  
+  DECIMAL(15,2), mandatory, default value = 0.00.  
+  Represents the current account balance.
+
+- **currency**  
+  CHAR(3), mandatory, default value = `EUR`.  
+  ISO currency code.
+
+- **status**  
+  VARCHAR(20), mandatory, default value = `ACTIVE`.  
+  Represents the lifecycle state of the account.
+
+- **created_at**  
+  DATETIME, mandatory.  
+  Defaults to the timestamp when the record is created.
+
+- **updated_at**  
+  DATETIME, mandatory.  
+  Automatically updated whenever the record is modified.
+
+#### Constraints and Rules
+- Primary key on `account_id`
+- Foreign key: `customer_id` references `customer(customer_id)`
+- Unique constraint on `iban`
+- `balance` must be greater than or equal to zero
+- Allowed values for `status`: `ACTIVE`, `FROZEN`, `CLOSED`
+- Index exists on `customer_id` to support customer-to-account lookups
 
 ---
 
-### 4.3 Transaction
+### 4.3 Bank Transaction
 
-A transaction represents a financial operation on an account.
+The `bank_transaction` table represents a financial transaction executed on an account.  
+Each transaction is linked to exactly one account.
 
-Fields:
+#### Attributes
+- **transaction_id**  
+  BIGINT, primary key, auto-generated.  
+  Uniquely identifies a transaction.
 
-* transaction_id (unique identifier)
-* account_id (foreign key → Account)
-* transaction_type (DEPOSIT | WITHDRAWAL | TRANSFER)
-* amount
-* transaction_date
-* description
+- **account_id**  
+  BIGINT, mandatory.  
+  References the account on which the transaction occurred.
 
-Business Rules:
+- **amount**  
+  DECIMAL(15,2), mandatory.  
+  Transaction amount.
 
-* Transaction amount must be greater than 0
-* Withdrawals cannot exceed the current balance
-* Transactions can only be executed on ACTIVE accounts
+- **currency**  
+  CHAR(3), mandatory, default value = `EUR`.  
+  ISO currency code.
 
----
+- **direction**  
+  VARCHAR(10), mandatory.  
+  Indicates whether funds are incoming or outgoing.
+
+- **description**  
+  VARCHAR(255), optional.  
+  Free-text transaction description.
+
+- **booked_at**  
+  DATETIME, mandatory.  
+  Defaults to the timestamp when the transaction is recorded.
+
+#### Constraints and Rules
+- Primary key on `transaction_id`
+- Foreign key: `account_id` references `account(account_id)`
+- `amount` must be greater than zero
+- Allowed values for `direction`: `IN`, `OUT`
+- Index exists on `account_id`
+- Index exists on `booked_at` to support time-based queries
+
 
 ## 5. Data Integrity Rules
 
 * Foreign key relationships must be respected
-* Deleting a customer is not allowed if accounts exist
-* Deleting an account is not allowed if transactions exist
+* Deleting a customer with existing accounts is restricted by foreign key constraints
+* Deleting an account with existing transactions is restricted by foreign key constraints
 
 ---
 

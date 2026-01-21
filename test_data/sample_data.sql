@@ -31,17 +31,6 @@
 -- Transactions (valid)
 -- INSERT INTO transaction (...) VALUES (...);
 
--- -------------------------
--- Negative dataset (invalid)
--- -------------------------
--- Duplicate email (should fail, UNIQUE constraint)
--- INSERT INTO customer (...) VALUES (...);
-
--- Transaction with non-existing account_id (should fail, FK constraint)
--- INSERT INTO transaction (...) VALUES (...);
-
--- Negative amount / invalid business rule (should fail either by CHECK or by test)
--- INSERT INTO transaction (...) VALUES (...);
 
 USE banking_testing;
 
